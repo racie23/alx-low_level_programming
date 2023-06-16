@@ -1,2 +1,3 @@
 #!/bin/bash
-gcc -S $CFILE input.c -o output.s
+gcc -S $CFILE
+

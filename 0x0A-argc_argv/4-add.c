@@ -4,11 +4,11 @@
 #include <string.h>
 
 /**
-  * main - Prints the sum of args positive numbers
+  * main - Print the sum of args positive numbers
   * @argc: argument count
   * @argv: argument vector
   *
-  * Return: Always zero
+  * Return: Always 0 (success)
   */
 int main(int argc, char *argv[])
 {

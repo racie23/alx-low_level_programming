@@ -2,7 +2,7 @@
 
 /**
  * set_bit - set a bit at a given index
- * @n: the address to the number to change 
+ * @a: the address to the number to change 
  * @index: the index of the bit to set
  *
  * Return: 1 if it worked, or -1 if an error occurred

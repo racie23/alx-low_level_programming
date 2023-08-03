@@ -18,7 +18,7 @@ unsigned int binary_to_uint(const char *n)
 	{
 		if (n[a] < '0' || n[a] > '1')
 			return (0);
-		dec_val = 2 * dec_val + (n[i] - '0');
+		dec_val = 2 * dec_val + (n[a] - '0');
 	}
 
 	return (dec_val); }

@@ -9,7 +9,7 @@
  * @argv: the argument vector
  * Return: does not return
  */
-void error_file(int file_from, int file_to, char *agrv[])
+void error_file(int file_from, int file_to, char *argv[])
 {
 	if (file_from == -1)
 	{
@@ -24,7 +24,7 @@ void error_file(int file_from, int file_to, char *agrv[])
 }
 
 /**
- * main - Check the code 
+ * main - Check the code
  * @argc: no. of arguments
  * @agrv: the argument vector
  * Return: Always 0 (success)

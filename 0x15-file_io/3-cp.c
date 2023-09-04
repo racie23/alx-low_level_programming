@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
-void error_file(int file_from, int file_to, char *argv[]);
-void copy_files(int file_from, int file_to, char *argv[]);
+void error_file(int file_from, int file_to);
+void copy_files(int file_from, int file_to);
 void close_files(int file_from, int file_to);
 
 /**
@@ -20,15 +23,16 @@ int main(int argc, char *argv[])
 
 	if (argc != 3)
 	{
-		dprintf(STDERR_FILENO, "%s\n", "Usage: cp file_from file_to");
-		exit(97);
+		dprintf(STDERR_FILENO, "Usage:%s file_from file_to\n", argv[0]);
+		exit(1);
 	}
 
 	file_from = open(argv[1], O_RDONLY);
-	file_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
-	error_file(file_from, file_to, argv);
+	file_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC,
+			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	error_file(file_from, file_to);
 
-	copy_files(file_from, file_to, argv);
+	copy_files(file_from, file_to);
 	close_files(file_from, file_to);
 
 	return (0);
@@ -38,21 +42,20 @@ int main(int argc, char *argv[])
  * error_file- Check whether files can be opened
  * @file_from: File descriptor for the source file
  * @file_to: File descriptor for the destination file
- * @argv: The argument vector
  * Return: Does not return
  */
 
-void error_file(int file_from, int file_to, char *argv[])
+void error_file(int file_from, int file_to)
 {
 	if (file_from == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can not read from file %s\n", argv[1]);
-		exit(98);
+	perror("Error reading from file");
+		exit(2);
 	}
 	if (file_to == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can not write to %s\n", argv[2]);
-		exit(99);
+		perror("Error writing to file");
+		exit(3);
 	}
 }
 
@@ -60,11 +63,10 @@ void error_file(int file_from, int file_to, char *argv[])
  * copy_files - Copy data from source file to destination file
  * @file_from: File descriptor for the source file
  * @file_to: File descriptor for the destination file
- * @argv: The argument vector
  * Return: Does not return
  */
 
-void copy_files(int file_from, int file_to, char *argv[])
+void copy_files(int file_from, int file_to)
 
 {
 	ssize_t nchars, nwr;
@@ -75,12 +77,14 @@ void copy_files(int file_from, int file_to, char *argv[])
 		nwr = write(file_to, buf, nchars);
 		if (nwr == -1)
 		{
-			error_file(0, -1, argv);
+			perror("Error writing to file");
+			exit(4);
 		}
 	}
 	if (nchars == -1)
 	{
-		error_file(-1, 0, argv);
+		perror("Error reading from file");
+		exit(5);
 	}
 }
 
@@ -98,15 +102,15 @@ void close_files(int file_from, int file_to)
 	err_close = close(file_from);
 	if (err_close == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can not close fd %d\n", file_from);
-		exit(100);
+		perror("Error closing source file");
+		exit(6);
 	}
 
 	err_close = close(file_to);
 	if (err_close == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can not close fd %d\n", file_to);
-		exit(100);
+		perror("Error closing destination file");
+		exit(7);
 	}
 }
 

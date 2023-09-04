@@ -1,3 +1,4 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -22,24 +23,14 @@ int main(int argc, char *argv[])
 
 	if (argc != 3)
 	{
-		fprintf(stderr, "Usage:%s file_from file_to\n", argv[0]);
+		dprintf(STDERR_FILENO, "Usage:%s file_from file_to\n", argv[0]);
 		exit(1);
 	}
 
 	file_from = open(argv[1], O_RDONLY);
-	if (file_from == -1)
-	{
-		perror("Error opening source file");
-		exit(2);
-	}
-
 	file_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC,
 			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (file_to == -1)
-	{
-		perror("Error opening destination file");
-		exit(3);
-	}
+	error_file(file_from, file_to);
 
 	copy_files(file_from, file_to);
 	close_files(file_from, file_to);
@@ -58,13 +49,13 @@ void error_file(int file_from, int file_to)
 {
 	if (file_from == -1)
 	{
-	perror("Error reading from source file");
-		exit(4);
+	perror("Error reading from file");
+		exit(2);
 	}
 	if (file_to == -1)
 	{
-		perror("Error writing to destination file");
-		exit(5);
+		perror("Error writing to file");
+		exit(3);
 	}
 }
 
@@ -86,14 +77,14 @@ void copy_files(int file_from, int file_to)
 		nwr = write(file_to, buf, nchars);
 		if (nwr == -1)
 		{
-			perror("Error writing to destination file");
-			exit(6);
+			perror("Error writing to file");
+			exit(4);
 		}
 	}
 	if (nchars == -1)
 	{
-		perror("Error reading from source file");
-		exit(7);
+		perror("Error reading from file");
+		exit(5);
 	}
 }
 
@@ -112,14 +103,14 @@ void close_files(int file_from, int file_to)
 	if (err_close == -1)
 	{
 		perror("Error closing source file");
-		exit(8);
+		exit(6);
 	}
 
 	err_close = close(file_to);
 	if (err_close == -1)
 	{
 		perror("Error closing destination file");
-		exit(9);
+		exit(7);
 	}
 }
 

@@ -2,16 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *allocate_buffer(char *file);
-void close_descriptor(int fd);
+char *create_buffer(char *file);
+void close_file(int fd);
 
 /**
- * allocate_buffer - Allocates 1024 bytes for a buffer.
+ * create_buffer - Allocates 1024 bytes for a buffer.
  * @file: The name of the file buffer is storing chars for.
  *
  * Return: A pointer to the newly-allocated buffer.
  */
-char *allocate_buffer(char *file)
+char *create_buffer(char *file)
 {
 	char *buffer;
 
@@ -20,7 +20,7 @@ char *allocate_buffer(char *file)
 	if (buffer == NULL)
 	{
 		dprintf(STDERR_FILENO,
-			"Error: Can't allocate buffer for %s\n", file);
+			"Error: Can't write to %s\n", file);
 		exit(99);
 	}
 
@@ -28,18 +28,18 @@ char *allocate_buffer(char *file)
 }
 
 /**
- * close_descriptor - Closes file descriptors.
+ * close_file - Closes file descriptors.
  * @fd: The file descriptor to be closed.
  */
-void close_descriptor(int fd)
+void close_file(int fd)
 {
-	int result;
+	int c;
 
-	result = close(fd);
+	c = close(fd);
 
-	if (result == -1)
+	if (c == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't close file descriptor %d\n", fd);
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
 		exit(100);
 	}
 }
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 		exit(97);
 	}
 
-	buffer = allocate_buffer(argv[2]);
+	buffer = create_buffer(argv[2]);
 	from = open(argv[1], O_RDONLY);
 	r = read(from, buffer, 1024);
 	to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
@@ -96,8 +96,8 @@ int main(int argc, char *argv[])
 	} while (r > 0);
 
 	free(buffer);
-	close_descriptor(from);
-	close_descriptor(to);
+	close_file(from);
+	close_file(to);
 
 	return (0);
 }
